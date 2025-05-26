@@ -1,5 +1,5 @@
 // src/context/BalanceProvider.tsx
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import graphqlClient from "../../api/graphClient";
 import { BalanceContext } from "./BalanceContext";
 
@@ -32,8 +32,16 @@ export const BalanceProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
+  const contextValue = useMemo(
+    () => ({
+      balance,
+      refreshBalance,
+    }),
+    [balance, refreshBalance]
+  );
+
   return (
-    <BalanceContext.Provider value={{ balance, refreshBalance }}>
+    <BalanceContext.Provider value={contextValue}>
       {children}
     </BalanceContext.Provider>
   );

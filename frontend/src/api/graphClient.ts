@@ -13,6 +13,78 @@ interface GraphQLResponse {
   errors?: GraphQLError[];
 }
 
+// Helper function to clear authentication token
+const clearAuthToken = (): void => {
+  localStorage.removeItem("accessToken");
+};
+
+// Helper function to handle GraphQL-specific errors
+const handleGraphQLError = (error: GraphQLError): string => {
+  if (error.extensions?.code === 'UNAUTHENTICATED') {
+    clearAuthToken();
+    return "Sesja wygasła. Zaloguj się ponownie.";
+  }
+  
+  if (error.extensions?.code === 'FORBIDDEN') {
+    return "Brak uprawnień do wykonania tej operacji.";
+  }
+  
+  return error.message;
+};
+
+// Helper function to process GraphQL errors
+const processGraphQLErrors = (errors: GraphQLError[]): never => {
+  const errorMessages = errors.map(handleGraphQLError);
+  throw new Error(errorMessages.join("\n"));
+};
+
+// Helper function to handle HTTP status errors
+const handleHttpStatusError = (status: number): never => {
+  const statusErrorMap: Record<number, string> = {
+    401: "Nieautoryzowany dostęp. Zaloguj się ponownie.",
+    403: "Brak uprawnień do wykonania tej operacji.",
+    404: "Zasób nie został znaleziony.",
+    500: "Błąd serwera. Spróbuj ponownie później.",
+  };
+
+  if (status === 401) {
+    clearAuthToken();
+  }
+
+  const errorMessage = statusErrorMap[status] ?? `Błąd serwera: ${status}`;
+  throw new Error(errorMessage);
+};
+
+// Helper function to handle Axios errors
+const handleAxiosError = (error: AxiosError): never => {
+  if (error.response) {
+    // Server responded with error status
+    return handleHttpStatusError(error.response.status);
+  }
+  
+  if (error.request) {
+    // Network error
+    throw new Error("Błąd połączenia z serwerem. Sprawdź połączenie internetowe.");
+  }
+  
+  // Request setup error
+  throw new Error("Błąd konfiguracji żądania.");
+};
+
+// Helper function to handle any error type
+const handleError = (err: unknown): never => {
+  if (err instanceof AxiosError) {
+    return handleAxiosError(err);
+  }
+  
+  if (err instanceof Error) {
+    throw err;
+  }
+  
+  throw new Error("Wystąpił nieoczekiwany błąd.");
+};
+
+// Main GraphQL client function
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const graphqlClient = async (query: string, variables?: any) => {
   const token = localStorage.getItem("accessToken");
@@ -20,10 +92,7 @@ const graphqlClient = async (query: string, variables?: any) => {
   try {
     const response = await axios.post<GraphQLResponse>(
       "http://localhost:8080/graphql",
-      {
-        query,
-        variables,
-      },
+      { query, variables },
       {
         headers: {
           "Content-Type": "application/json",
@@ -32,61 +101,14 @@ const graphqlClient = async (query: string, variables?: any) => {
       }
     );
 
-    // Handle GraphQL errors
-    if (response.data.errors && response.data.errors.length > 0) {
-      const errorMessages = response.data.errors.map((error: GraphQLError) => {
-        // Check for specific error types
-        if (error.extensions?.code === 'UNAUTHENTICATED') {
-          // Clear invalid token
-          localStorage.removeItem("accessToken");
-          return "Sesja wygasła. Zaloguj się ponownie.";
-        }
-        if (error.extensions?.code === 'FORBIDDEN') {
-          return "Brak uprawnień do wykonania tej operacji.";
-        }
-        return error.message;
-      });
-      
-      throw new Error(errorMessages.join("\n"));
+    // Check for GraphQL errors
+    if (response.data.errors?.length) {
+      processGraphQLErrors(response.data.errors);
     }
 
     return response.data;
   } catch (err) {
-    // Handle different types of errors
-    if (err instanceof AxiosError) {
-      // Network or HTTP errors
-      if (err.response) {
-        // Server responded with error status
-        const status = err.response.status;
-        switch (status) {
-          case 401:
-            localStorage.removeItem("accessToken");
-            throw new Error("Nieautoryzowany dostęp. Zaloguj się ponownie.");
-          case 403:
-            throw new Error("Brak uprawnień do wykonania tej operacji.");
-          case 404:
-            throw new Error("Zasób nie został znaleziony.");
-          case 500:
-            throw new Error("Błąd serwera. Spróbuj ponownie później.");
-          default:
-            throw new Error(`Błąd serwera: ${status}`);
-        }
-      } else if (err.request) {
-        // Network error
-        throw new Error("Błąd połączenia z serwerem. Sprawdź połączenie internetowe.");
-      } else {
-        // Request setup error
-        throw new Error("Błąd konfiguracji żądania.");
-      }
-    }
-    
-    // Re-throw if it's already a custom error (like GraphQL errors)
-    if (err instanceof Error) {
-      throw err;
-    }
-    
-    // Fallback for unknown errors
-    throw new Error("Wystąpił nieoczekiwany błąd.");
+    handleError(err);
   }
 };
 

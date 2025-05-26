@@ -37,20 +37,6 @@ const GroupsPage: React.FC = () => {
     toast.success("Grupa utworzona");
   };
 
-  // const handleDeleteGroup = async (groupId: number) => {
-  //   try {
-  //     await groupsApi.deleteGroup(groupId);
-  //     toast.success("✅ Grupa usunięta.");
-  //     fetchGroups();
-  //     setSelectedGroup(null);
-  //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   } catch (error: unknown) {
-  //     toast.info("Ta grupa posiada powiązania. Czy na pewno chcesz ją usunąć?");
-  //     setPendingDeleteId(groupId);
-  //     setShowConfirm(true);
-  //   }
-  // };
-
   const handleDeleteClick = (group: Group) => {
     setGroupToDelete(group);
     setShowModal(true);
