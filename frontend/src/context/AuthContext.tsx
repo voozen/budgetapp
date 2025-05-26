@@ -1,5 +1,5 @@
 // src/context/AuthContext.tsx
-import React, { createContext, useState, ReactNode, useEffect } from "react";
+import React, { createContext, useState, ReactNode, useEffect, useMemo } from "react";
 import { jwtDecode } from "jwt-decode";
 
 export interface User {
@@ -78,8 +78,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setUser(null);
   };
 
+  const contextValue = useMemo(
+    () => ({
+      isAuthenticated,
+      login,
+      logout,
+      user,
+    }),
+    [isAuthenticated, user]
+  );
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, user }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

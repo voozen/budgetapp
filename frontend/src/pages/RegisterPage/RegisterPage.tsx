@@ -55,9 +55,9 @@ const RegisterPage: React.FC = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       // Obsługa błędów z backendu
-      if (error.response && error.response.data) {
+      if (error.response?.data) {
         setErrors(
-          error.response.data.errors || {
+          error.response.data.errors ?? {
             general: "Błąd rejestracji. Spróbuj ponownie.",
           }
         );
@@ -72,8 +72,9 @@ const RegisterPage: React.FC = () => {
       <h2>Rejestracja</h2>
       <form onSubmit={handleRegister} className={styles.form}>
         <div className={styles.formGroup}>
-          <label>Nazwa użytkownika:</label>
+          <label htmlFor="username">Nazwa użytkownika:</label>
           <input
+            id="username"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -83,8 +84,9 @@ const RegisterPage: React.FC = () => {
           {errors.username && <ErrorMessage message={errors.username} />}
         </div>
         <div className={styles.formGroup}>
-          <label>Email:</label>
+          <label htmlFor="email">Email:</label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -94,8 +96,9 @@ const RegisterPage: React.FC = () => {
           {errors.email && <ErrorMessage message={errors.email} />}
         </div>
         <div className={styles.formGroup}>
-          <label>Hasło:</label>
+          <label htmlFor="password">Hasło:</label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -105,8 +108,9 @@ const RegisterPage: React.FC = () => {
           {errors.password && <ErrorMessage message={errors.password} />}
         </div>
         <div className={styles.formGroup}>
-          <label>Powtórz hasło:</label>
+          <label htmlFor="confirmPassword">Powtórz hasło:</label>
           <input
+            id="confirmPassword"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}

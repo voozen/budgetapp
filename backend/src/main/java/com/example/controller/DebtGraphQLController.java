@@ -27,10 +27,11 @@ public class DebtGraphQLController {
     @QueryMapping
     public List<Debt> groupDebts(@Argument Long groupId) {
         return debtService.getGroupDebts(groupId).stream()
-                .peek(debt -> {
+                .map(debt -> {
                     if (debt.getTitle() == null) {
                         debt.setTitle("Brak opisu");
                     }
+                    return debt;
                 })
                 .toList();
     }

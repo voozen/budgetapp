@@ -48,8 +48,9 @@ const TransactionForm: React.FC = () => {
       <h2>Dodaj Transakcję</h2>
 
       <div className={styles.formGroup}>
-        <label>Kwota:</label>
+        <label htmlFor="amount">Kwota:</label>
         <input
+          id="amount"
           type="number"
           step="0.01"
           placeholder="Kwota"
@@ -69,8 +70,9 @@ const TransactionForm: React.FC = () => {
       </div>
 
       <div className={styles.formGroup}>
-        <label>Typ:</label>
+        <label htmlFor="type">Typ:</label>
         <select
+          id="type"
           {...register("type", {
             required: "Typ transakcji jest wymagany",
             validate: (val) =>
@@ -88,8 +90,9 @@ const TransactionForm: React.FC = () => {
       </div>
 
       <div className={styles.formGroup}>
-        <label>Tagi:</label>
+        <label htmlFor="tags">Tagi:</label>
         <input
+          id="tags"
           type="text"
           {...register("tags", {
             required: "Tagi są wymagane",
@@ -109,8 +112,9 @@ const TransactionForm: React.FC = () => {
       </div>
 
       <div className={styles.formGroup}>
-        <label>Notatki:</label>
+        <label htmlFor="notes">Notatki:</label>
         <textarea
+          id="notes"
           {...register("notes", {
             maxLength: {
               value: 200,

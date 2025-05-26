@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
       navigate("/transactions");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      if (error.response && error.response.data) {
+      if (error.response?.data) {
         setError(error.response.data); // wiadomość z backendu
       } else {
         setError("Wystąpił nieznany błąd podczas logowania.");
@@ -35,8 +35,9 @@ const LoginPage: React.FC = () => {
       <h2 className={styles.title}>Logowanie</h2>
       <form onSubmit={handleLogin} className={styles.form}>
         <div className={styles.formGroup}>
-          <label>Email:</label>
+          <label htmlFor="email">Email:</label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -46,8 +47,9 @@ const LoginPage: React.FC = () => {
           {error && <ErrorMessage message={error} />}
         </div>
         <div className={styles.formGroup}>
-          <label>Hasło:</label>
+          <label htmlFor="password">Hasło:</label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

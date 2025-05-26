@@ -17,8 +17,6 @@ const GroupsPage: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [newGroupName, setNewGroupName] = useState("");
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
-  // const [showConfirm, setShowConfirm] = useState(false);
-  // const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState<Group | null>(null);
 
@@ -77,6 +75,17 @@ const GroupsPage: React.FC = () => {
     setShowModal(false);
   };
 
+  const handleGroupSelect = (group: Group) => {
+    setSelectedGroup(group);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent, group: Group) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleGroupSelect(group);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h2>Twoje Grupy</h2>
@@ -98,17 +107,21 @@ const GroupsPage: React.FC = () => {
 
       <ul className={styles.list}>
         {groups.map((group) => (
-          <li
-            key={group.id}
-            onClick={() => setSelectedGroup(group)}
-            className={styles.groupItem}
-          >
-            {group.name}
+          <li key={group.id} className={styles.groupItem}>
+            <button
+              onClick={() => handleGroupSelect(group)}
+              onKeyDown={(e) => handleKeyDown(e, group)}
+              className={styles.groupButton}
+              aria-label={`Wybierz grupę ${group.name}`}
+            >
+              {group.name}
+            </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 handleDeleteClick(group);
               }}
+              className={styles.deleteButton}
             >
               Usuń
             </button>

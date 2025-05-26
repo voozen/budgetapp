@@ -20,6 +20,7 @@ import java.io.IOException;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
@@ -47,7 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     }
                 }
             } catch (Exception ex) {
-                System.out.println("Błąd parsowania JWT: " + ex.getMessage());
+                logger.error("Błąd parsowania JWT: {}", ex.getMessage(), ex);
             }
         }
 
