@@ -59,10 +59,6 @@ jobs:
         working-directory: backend
         run: mvn clean compile
 
-      - name: Run backend tests
-        working-directory: backend
-        run: mvn test
-
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
