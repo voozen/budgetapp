@@ -26,7 +26,7 @@ export const BalanceProvider: React.FC<{ children: React.ReactNode }> = ({
     `;
     try {
       const response = await graphqlClient(query, { days });
-      setBalance(response.data.userBalance);
+      setBalance(response?.data?.userBalance ?? null);
     } catch (error) {
       console.error("Błąd pobierania bilansu:", error);
     }

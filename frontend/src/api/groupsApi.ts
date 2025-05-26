@@ -12,7 +12,7 @@ export const groupsApi = {
     }
   `;
     const response = await graphqlClient(query);
-    return response.data.myGroups;
+    return response?.data?.myGroups ?? [];
   },
 
   createGroup: async (name: string) => {
@@ -39,7 +39,7 @@ export const groupsApi = {
       }
     `;
     const response = await graphqlClient(query, { groupId });
-    return response.data.groupMembers;
+    return response?.data?.groupMembers ?? [];
   },
 
   addMember: async (groupId: number, userEmail: string) => {
@@ -109,7 +109,7 @@ export const groupsApi = {
     }
     `;
     const response = await graphqlClient(query, { groupId });
-    return response.data.groupDebts;
+    return response?.data?.groupDebts ?? [];
   },
 
   deleteDebt: async (debtId: number) => {
